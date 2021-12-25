@@ -10,7 +10,7 @@ pub struct MatchAllQuery {
 }
 
 impl MatchAllQuery {
-    fn new() -> MatchAllQuery {
+    pub fn new() -> MatchAllQuery {
         MatchAllQuery { boost: None }
     }
 }
