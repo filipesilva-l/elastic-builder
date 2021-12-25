@@ -12,7 +12,7 @@ impl Query for MatchNoneQuery {
         "match_none"
     }
 
-    fn to_json(&self) -> String {
+    fn to_json(self) -> String {
         let json = json!({
             self.get_type(): {}
         });

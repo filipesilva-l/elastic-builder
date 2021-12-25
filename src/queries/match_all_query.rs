@@ -20,7 +20,7 @@ impl Query for MatchAllQuery {
         "match_all"
     }
 
-    fn to_json(&self) -> String {
+    fn to_json(self) -> String {
         let json: Value = match self.boost {
             Some(factor) => json!({ self.get_type(): { "boost": factor } }),
             None => json!({ self.get_type(): {} }),
