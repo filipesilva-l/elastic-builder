@@ -2,6 +2,9 @@ use serde_json::json;
 
 use super::Query;
 
+/// The inverse of the `match_all` query, which matches no documents.
+/// 
+/// [Elasticsearch reference](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-match-all-query.html)
 pub struct MatchNoneQuery;
 
 impl Query for MatchNoneQuery {
