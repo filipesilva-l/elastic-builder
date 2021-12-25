@@ -1,10 +1,7 @@
-use serde::Serialize;
-use serde::Deserialize;
 use serde_json::json;
 
 use super::Query;
 
-#[derive(Serialize, Deserialize, Debug)]
 pub struct MatchAllQuery;
 
 impl Query for MatchAllQuery {
