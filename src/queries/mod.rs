@@ -1,12 +1,12 @@
-mod match_all_query;
-mod match_none_query;
+use serde_json::Value;
 
-pub use match_all_query::MatchAllQuery;
-pub use match_none_query::MatchNoneQuery;
+pub mod match_all_query;
+pub mod match_none_query;
+pub mod fulltext_queries;
 
-trait Query {
+pub trait Query {
     fn get_type(&self) -> &str;
-    fn to_json(self) -> String;
+    fn to_json(self) -> Value;
 }
 
 trait BoostableQuery: Query {

@@ -20,13 +20,11 @@ impl Query for MatchAllQuery {
         "match_all"
     }
 
-    fn to_json(self) -> String {
-        let json: Value = match self.boost {
+    fn to_json(self) -> Value {
+        match self.boost {
             Some(factor) => json!({ self.get_type(): { "boost": factor } }),
             None => json!({ self.get_type(): {} }),
-        };
-
-        serde_json::to_string(&json).unwrap()
+        }
     }
 }
 
@@ -51,7 +49,7 @@ mod tests {
     fn should_retrieve_valid_json() {
         let query = MatchAllQuery::new();
 
-        assert_eq!(query.to_json(), "{\"match_all\":{}}");
+        assert_eq!(query.to_json(), json!({"match_all":{}}));
     }
 
     #[test]
@@ -69,6 +67,6 @@ mod tests {
 
         query.boost(13.0);
 
-        assert_eq!(query.to_json(), "{\"match_all\":{\"boost\":13.0}}");
+        assert_eq!(query.to_json(), json!({"match_all":{"boost":13.0}}));
     }
 }
