@@ -1,6 +1,7 @@
 mod queries;
 
 use queries::Query;
+mod utils;
 
 use serde_json::json;
 
