@@ -1,5 +1,6 @@
-mod queries;
+#![allow(dead_code)]
 
+mod queries;
 use queries::Query;
 mod utils;
 
