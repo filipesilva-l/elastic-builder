@@ -1,47 +1,48 @@
 use super::mono_field_query::MonoFieldQuery;
 use crate::queries::Query;
-use crate::utils::json_value_extensions::{ToValue, ValueExt};
+use crate::utils::json_value_extensions::ValueExt;
+use serde::{Serialize, Serializer};
 use serde_json::Value;
 use std::fmt::Debug;
 
 #[derive(PartialEq, Debug)]
- enum Operator {
+enum Operator {
     And,
     Or,
 }
 
-impl ToValue for Operator {
-    fn get_value(&self) -> Value {
-        Value::String(
-            match self {
-                Operator::And => "and",
-                Operator::Or => "or",
-            }
-            .to_string(),
-        )
+impl Serialize for Operator {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        match *self {
+            Operator::And => serializer.serialize_unit_variant("Operator", 0, "and"),
+            Operator::Or => serializer.serialize_unit_variant("Operator", 1, "or"),
+        }
     }
 }
 
 #[derive(PartialEq, Debug)]
- enum ZeroTermsQuery {
+enum ZeroTermsQuery {
     None,
     All,
 }
 
-impl ToValue for ZeroTermsQuery {
-    fn get_value(&self) -> Value {
-        Value::String(
-            match self {
-                ZeroTermsQuery::None => "none",
-                ZeroTermsQuery::All => "all",
-            }
-            .to_string(),
-        )
+impl Serialize for ZeroTermsQuery {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        match self {
+            ZeroTermsQuery::None => serializer.serialize_unit_variant("ZeroTermsQuery", 0, "none"),
+            ZeroTermsQuery::All => serializer.serialize_unit_variant("ZeroTermsQuery", 0, "all"),
+        }
     }
 }
 
 #[derive(PartialEq, Debug)]
- enum RewriteType {
+enum RewriteType {
     ConstantScore,
     ScoringBoolean,
     ConstantScoreBoolean,
@@ -50,19 +51,31 @@ impl ToValue for ZeroTermsQuery {
     TopTerms15,
 }
 
-impl ToValue for RewriteType {
-    fn get_value(&self) -> Value {
-        Value::String(
-            match self {
-                RewriteType::ConstantScore => "constant_score",
-                RewriteType::ScoringBoolean => "scoring_boolean",
-                RewriteType::ConstantScoreBoolean => "constant_score_boolean",
-                RewriteType::ConstantScoreFilter => "constant_score_filter",
-                RewriteType::TopTermsBoost23 => "top_terms_boost_23",
-                RewriteType::TopTerms15 => "top_terms_15",
+impl Serialize for RewriteType {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        match *self {
+            RewriteType::ConstantScore => {
+                serializer.serialize_unit_variant("RewriteType", 0, "constant_score")
             }
-            .to_string(),
-        )
+            RewriteType::ScoringBoolean => {
+                serializer.serialize_unit_variant("RewriteType", 1, "scoring_boolean")
+            }
+            RewriteType::ConstantScoreBoolean => {
+                serializer.serialize_unit_variant("RewriteType", 2, "constant_score_boolean")
+            }
+            RewriteType::ConstantScoreFilter => {
+                serializer.serialize_unit_variant("RewriteType", 3, "constant_score_filter")
+            }
+            RewriteType::TopTermsBoost23 => {
+                serializer.serialize_unit_variant("RewriteType", 4, "top_terms_boost_23")
+            }
+            RewriteType::TopTerms15 => {
+                serializer.serialize_unit_variant("RewriteType", 5, "top_terms_15")
+            }
+        }
     }
 }
 
@@ -83,8 +96,8 @@ pub struct MatchQuery<'a> {
 }
 
 impl<'a> MatchQuery<'a> {
-     fn new(field: String, query_string: String) -> Result<Self, &'static str> {
-        let query_result =  MonoFieldQuery::new("match", field, query_string);
+    fn new(field: String, query_string: String) -> Result<Self, &'static str> {
+        let query_result = MonoFieldQuery::new("match", field, query_string);
 
         match query_result {
             Err(err) => Err(err),
@@ -105,47 +118,47 @@ impl<'a> MatchQuery<'a> {
 
     // Returns &mut Self so operations can be chained
 
-     fn set_operator(&mut self, operator: Operator) -> &mut Self {
+    fn set_operator(&mut self, operator: Operator) -> &mut Self {
         self.operator = Some(operator);
         self
     }
 
-     fn set_zero_terms_query(&mut self, zero_terms_query: ZeroTermsQuery) -> &mut Self {
+    fn set_zero_terms_query(&mut self, zero_terms_query: ZeroTermsQuery) -> &mut Self {
         self.zero_terms_query = Some(zero_terms_query);
         self
     }
 
-     fn set_fuzzy_rewrite(&mut self, rewrite: RewriteType) -> &mut Self {
+    fn set_fuzzy_rewrite(&mut self, rewrite: RewriteType) -> &mut Self {
         self.fuzzy_rewrite = Some(rewrite);
         self
     }
 
-     fn set_lenient(&mut self, lenient: bool) -> &mut Self {
+    fn set_lenient(&mut self, lenient: bool) -> &mut Self {
         self.lenient = Some(lenient);
         self
     }
 
-     fn set_fuzziness(&mut self, fuzziness: String) -> &mut Self {
+    fn set_fuzziness(&mut self, fuzziness: String) -> &mut Self {
         self.fuzziness = Some(fuzziness);
         self
     }
 
-     fn set_prefix_length(&mut self, prefix_length: u32) -> &mut Self {
+    fn set_prefix_length(&mut self, prefix_length: u32) -> &mut Self {
         self.prefix_length = Some(prefix_length);
         self
     }
 
-     fn set_max_expansions(&mut self, max_expansions: u32) -> &mut Self {
+    fn set_max_expansions(&mut self, max_expansions: u32) -> &mut Self {
         self.max_expansions = Some(max_expansions);
         self
     }
 
-     fn set_fuzzy_transpositions(&mut self, fuzzy_transpositions: bool) -> &mut Self {
+    fn set_fuzzy_transpositions(&mut self, fuzzy_transpositions: bool) -> &mut Self {
         self.fuzzy_transpositions = Some(fuzzy_transpositions);
         self
     }
 
-     fn set_analyzer(&mut self, analyzer: String) -> &mut Self {
+    fn set_analyzer(&mut self, analyzer: String) -> &mut Self {
         self.analyzer = Some(analyzer);
         self
     }
@@ -164,13 +177,12 @@ impl<'a> Query for MatchQuery<'a> {
         query_options.add_if_it_was_set("operator", &self.operator);
         query_options.add_if_it_was_set("zero_terms_query", &self.zero_terms_query);
         query_options.add_if_it_was_set("fuzzy_rewrite", &self.fuzzy_rewrite);
-        query_options.add_if_it_was_set_primitive("lenient", &self.lenient);
-        query_options.add_if_it_was_set_primitive("fuzziness", &self.fuzziness);
-        query_options.add_if_it_was_set_primitive("prefix_length", &self.prefix_length);
-        query_options.add_if_it_was_set_primitive("max_expansions", &self.max_expansions);
-        query_options
-            .add_if_it_was_set_primitive("fuzzy_transpositions", &self.fuzzy_transpositions);
-        query_options.add_if_it_was_set_primitive("analyzer", &self.analyzer);
+        query_options.add_if_it_was_set("lenient", &self.lenient);
+        query_options.add_if_it_was_set("fuzziness", &self.fuzziness);
+        query_options.add_if_it_was_set("prefix_length", &self.prefix_length);
+        query_options.add_if_it_was_set("max_expansions", &self.max_expansions);
+        query_options.add_if_it_was_set("fuzzy_transpositions", &self.fuzzy_transpositions);
+        query_options.add_if_it_was_set("analyzer", &self.analyzer);
 
         value
     }
@@ -185,7 +197,7 @@ mod tests {
     mod common {
         use super::*;
 
-         pub fn get_valid_instance<'a>() -> MatchQuery<'a> {
+        pub fn get_valid_instance<'a>() -> MatchQuery<'a> {
             MatchQuery::new("field".to_string(), "search".to_string()).unwrap()
         }
     }
