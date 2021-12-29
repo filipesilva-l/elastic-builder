@@ -1,27 +1,9 @@
 use super::mono_field_query::MonoFieldQuery;
-use crate::queries::Query;
+use crate::queries::{Query, common::Operator};
 use crate::utils::json_value_extensions::ValueExt;
 use serde::{Serialize, Serializer};
 use serde_json::Value;
 use std::fmt::Debug;
-
-#[derive(PartialEq, Debug)]
-enum Operator {
-    And,
-    Or,
-}
-
-impl Serialize for Operator {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        match *self {
-            Operator::And => serializer.serialize_unit_variant("Operator", 0, "and"),
-            Operator::Or => serializer.serialize_unit_variant("Operator", 1, "or"),
-        }
-    }
-}
 
 #[derive(PartialEq, Debug)]
 enum ZeroTermsQuery {

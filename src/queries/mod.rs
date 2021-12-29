@@ -1,5 +1,7 @@
 use serde_json::Value;
 
+pub mod common;
+
 pub mod match_all_query;
 pub mod match_none_query;
 pub mod fulltext_queries;
